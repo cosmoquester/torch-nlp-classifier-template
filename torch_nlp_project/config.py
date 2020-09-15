@@ -1,3 +1,4 @@
+import json
 from typing import NamedTuple
 
 import yaml
@@ -49,7 +50,20 @@ class TrainConfig(NamedTuple):
     @classmethod
     def load_from_json(cls, config_path, **kwargs):
         """
-        Load config from the config file.
+        Load config from the json config file.
+        :param config_path: (str) json format config file.
+        :param **kwargs: parameters to override json setting.
+        """
+        with open(config_path) as f:
+            config = json.load(f)
+
+        config.update(kwargs)
+        return cls(**config)
+
+    @classmethod
+    def load_from_yaml(cls, config_path, **kwargs):
+        """
+        Load config from the yaml config file.
         :param config_path: (str) yaml format config file.
         :param **kwargs: parameters to override json setting.
         """
@@ -76,7 +90,20 @@ class InferConfig(NamedTuple):
     @classmethod
     def load_from_json(cls, config_path, **kwargs):
         """
-        Load config from the config file.
+        Load config from the json config file.
+        :param config_path: (str) json format config file.
+        :param **kwargs: parameters to override json setting.
+        """
+        with open(config_path) as f:
+            config = json.load(f)
+
+        config.update(kwargs)
+        return cls(**config)
+
+    @classmethod
+    def load_from_yaml(cls, config_path, **kwargs):
+        """
+        Load config from the yaml config file.
         :param config_path: (str) yaml format config file.
         :param **kwargs: parameters to override json setting.
         """
