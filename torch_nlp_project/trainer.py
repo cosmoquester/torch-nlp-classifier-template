@@ -1,42 +1,25 @@
-import logging
 from datetime import datetime
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
-from torchtext.data import Dataset, Example, Iterator
+from torchtext.data import Iterator
 
 from . import models
-from .config import InferConfig, TrainConfig
-from .data_loader import DataLoader, Fields, Vocab
+from .config import TrainConfig
+from .data_loader import DataLoader
+from .utils import get_logger
 
 
-class BaseManager:
-    def _set_logger(self, file_name):
-        """
-        Set logger that logging to std.out and file named 'file_name'.
-        :param file_name: File path to save log.
-        """
-        self.logger = logging.getLogger(__file__)
-        self.logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter("[%(asctime)s] %(message)s")
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        file_handler = logging.FileHandler(file_name)
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
-        self.logger.addHandler(file_handler)
-
-
-class TrainManager(BaseManager):
+class TrainManager:
     def __init__(self, training_config_path, device):
         """
         :param training_config_path: (str) training config file path.
         :param device: (str, torch.device) device for training.
         """
         # Set loogger
-        self._set_logger(f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}_train.log")
+        self.logger = get_logger(f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}_train.log")
         self.logger.info("Setting logger is complete")
 
         # Set device
@@ -184,73 +167,3 @@ class TrainManager(BaseManager):
             true_labels, pred_labels, average="binary", zero_division=0
         )
         return accuracy, precision, recall, f1
-
-
-class InferManager(BaseManager):
-    def __init__(self, inference_config_path, tokenize=None, device="cpu"):
-        """
-        :param inference_config_path: (str) inference config file path.
-        :param tokenize: (func) tokenizing function. (str) -> (list) of (str) tokens.
-        :prarm device: (str, torch.device) device for inference.
-        """
-        # Set loogger
-        self._set_logger(f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}_infer.log")
-        self.logger.info("Setting logger is complete")
-
-        # Set device
-        self.device = torch.device(device)
-        self.logger.info(f"Setting device:{self.device} is complete")
-
-        # Load training Config
-        self.config = InferConfig.load_from_json(inference_config_path)
-        self.logger.info(f"Loaded inference config from '{inference_config_path}'")
-
-        # Load Model
-        self.model = getattr(models, self.config.model_type).load(self.config.model_path)
-        self.model.to(self.device)
-        self.logger.info(f"Prepared model type: {type(self.model)}")
-
-        # Load vocab
-        self.vocab = Vocab.load(self.config.vocab_path)
-        self.logger.info(f"Set vocab from '{self.config.vocab_path}'")
-
-        # Set fields
-        self.fields = Fields(vocab_path=self.config.vocab_path, tokenize=tokenize)
-        self.logger.info(f"Set fields tokenize with '{self.fields.text_field.tokenize}'")
-
-    def inference_texts(self, texts):
-        """
-        :param texts: (list) list of texts to inferece.
-        :return: (list) of (int) labels about each text.
-        """
-        # Make inference batches
-        dataset = self._list_to_dataset(texts, self.fields.text_field)
-        batches = Iterator(
-            dataset, batch_size=self.config.val_batch_size, device=self.device, train=False, shuffle=False, sort=False
-        )
-
-        # Predict
-        labels = []
-        total_step = int(len(dataset) / self.config.val_batch_size + 1)
-        for batch in batches:
-            output = self.model(batch.text)
-            label = output.argmax(dim=1).cpu().detach().numpy()
-            labels.extend(label)
-
-        return labels
-
-    def _list_to_dataset(self, texts, text_field):
-        """
-        Make dataset from list of texts.
-        :param texts: (list) list of texts to inferece.
-        :param text_field: (Field) fields having tokenize function and vocab.
-        """
-        # Tokenize texts
-        tokenized = [[text_field.tokenize(text)] for text in texts]
-
-        # Make dataset from list
-        fields = [("text", text_field)]
-        examples = [Example.fromlist(text, fields=fields) for text in tokenized]
-        dataset = Dataset(examples, fields=fields)
-
-        return dataset

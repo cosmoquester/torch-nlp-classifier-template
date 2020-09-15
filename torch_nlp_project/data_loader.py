@@ -6,6 +6,7 @@ from torchtext.data import Dataset, Field, TabularDataset
 
 SPECIALS = ["<SOS>", "<EOS>", "<SEP>"]
 
+
 class Vocab(vocab.Vocab):
     """
     Vocab object to map word to index.
@@ -28,7 +29,7 @@ class Vocab(vocab.Vocab):
 
     def save(self, path):
         """
-        Save vocab object to text file. 
+        Save vocab object to text file.
         :param path: (str) Path to save. The file format is just lines of words. There is a word in a line.
                       This is for easily looking up and appending words.
         """
