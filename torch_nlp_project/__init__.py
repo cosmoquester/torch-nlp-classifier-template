@@ -1,3 +1,3 @@
-from . import config, data_loader, manager, models
+from . import config, data_loader, inferencer, models, trainer
 
-__all__ = ["config", "data_loader", "manager", "models"]
+__all__ = ["config", "data_loader", "inferencer", "models", "trainer"]
