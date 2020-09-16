@@ -1,7 +1,7 @@
 import logging
 
 
-def get_logger(file_path: str):
+def get_logger(file_path: str) -> logging.Logger:
     """
     get logger that logging to std.out and file on 'file_path'.
     :param file_path: File path to save log.

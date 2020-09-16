@@ -1,4 +1,5 @@
 import sys
+from typing import Callable, List, Optional, Tuple, Union
 
 import dill
 from torchtext import vocab
@@ -14,7 +15,7 @@ class Vocab(vocab.Vocab):
 
     UNK = "<UNK>"
 
-    def __init__(self, specials=SPECIALS):
+    def __init__(self, specials: List[str] = SPECIALS):
         """
         :param specials: (iterable) Special tokens that considered as words.
         """
@@ -27,7 +28,7 @@ class Vocab(vocab.Vocab):
         self.unk_index = self["<UNK>"]
         self.stoi.default_factory = lambda: self.unk_index
 
-    def save(self, path):
+    def save(self, path: str) -> None:
         """
         Save vocab object to text file.
         :param path: (str) Path to save. The file format is just lines of words. There is a word in a line.
@@ -38,7 +39,7 @@ class Vocab(vocab.Vocab):
                 f.write(word + "\n")
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path: str) -> Vocab:
         """
         Load from saved vocab text file.
         :param path: (str) Path to load.
@@ -58,13 +59,19 @@ class Vocab(vocab.Vocab):
 
 
 class Fields:
-    def __init__(self, vocab_path=None, tokenize=None, preprocessing=None, **kwargs):
+    def __init__(
+        self,
+        vocab_path: Optional[str] = None,
+        tokenize: Optional[Callable[[str], List[str]]] = None,
+        preprocessing: Optional[Callable[[List[str]], List[str]]] = None,
+        **kwargs
+    ):
         """
         object containing torchtext text and label fields.
         :param vocab_path: (str) vocab file path to create Vocab.
         :param tokenize: (func) function to tokenize texts (str) -> (list) of tokens format.
                          default tokenizer is Mecab and str.split (if mecab is unavailable)
-        :param preprocessing: (func) torchtext preprocessing function.
+        :param preprocessing: (func) torchtext preprocessing function after tokenize before numericalize.
         :param kwargs: (dict) keyword arguments for text field.
         """
         # Set tokenize
@@ -97,10 +104,17 @@ class DataLoader:
     """
 
     def __init__(self):
-        self.train_dataset = None
-        self.test_dataset = None
+        self.train_dataset: Optional[TarbularDataset] = None
+        self.test_dataset: Optional[TarbularDataset] = None
 
-    def make_dataset(self, fields=None, train_data_path=None, test_data_path=None, format="tsv", skip_header=True):
+    def make_dataset(
+        self,
+        fields: Optional[Fields, Tuple] = None,
+        train_data_path: Optional[str] = None,
+        test_data_path: Optional[str] = None,
+        format: str = "tsv",
+        skip_header: bool = True,
+    ) -> Tuple[TarbularDataset, TarbularDataset]:
         """
         Make datasets from train_data_path, test_data_path.
         :param fields: (list, Fields) This is used for TabularDataset fields. If the type of fields is list, it's format should be TarbularDataset fields.
@@ -132,7 +146,7 @@ class DataLoader:
 
         return self.train_dataset, self.test_dataset
 
-    def build_vocab(self, dataset=None, specials=None):
+    def build_vocab(self, dataset: TarbularDataset = None, specials: List[str] = None) -> Vocab:
         """
         Build Vocab from Train dataset.
         :param dataset: (Dataset) dataset used to build vocab. (default: self.train_dataset)
@@ -153,7 +167,7 @@ class DataLoader:
         text_field.vocab = vocab
         return vocab
 
-    def save(self, path):
+    def save(self, path: str) -> None:
         """
         Save dataloader to a file.
         Be careful that all functions such as tokenizer or preprocessing, postproessing are removed to save fields.
@@ -178,7 +192,7 @@ class DataLoader:
         )
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path: str) -> DataLoader:
         """
         Load dataloader from a file.
         Be careful that all functions such as tokenizer or preprocessing, postproessing are not loaded.
@@ -195,7 +209,7 @@ class DataLoader:
             dataloader.test_dataset = Dataset(examples=checkpoint["test_examples"], fields=checkpoint["test_fields"])
         return dataloader
 
-    def _get_serializable_fields(self, dataset):
+    def _get_serializable_fields(self, dataset: TarbularDataset):
         from copy import copy
 
         fields = {k: copy(v) for k, v in dataset.fields.items()}
