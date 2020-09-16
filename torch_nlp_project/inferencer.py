@@ -25,7 +25,7 @@ class InferManager:
         self.logger.info(f"Setting device:{self.device} is complete")
 
         # Load training Config
-        self.config = InferConfig.load_from_json(inference_config_path)
+        self.config = InferConfig.from_json(inference_config_path)
         self.logger.info(f"Loaded inference config from '{inference_config_path}'")
 
         # Load Model

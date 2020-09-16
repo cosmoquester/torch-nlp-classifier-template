@@ -27,7 +27,7 @@ class TrainManager:
         self.logger.info(f"Setting device:{self.device} is complete")
 
         # Load training Config
-        self.config = TrainConfig.load_from_json(training_config_path)
+        self.config = TrainConfig.from_json(training_config_path)
         self.logger.info(f"Loaded training config from '{training_config_path}'")
 
         # Load Dataset
