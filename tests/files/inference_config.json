@@ -1,0 +1,6 @@
+{
+    "model_type": "SampleModel",
+    "model_path": "sample_model.dill",
+    "vocab_path": "sample_vocab.txt",
+    "val_batch_size": 32
+}

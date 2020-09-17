@@ -1,14 +1,13 @@
 from datetime import datetime
+from typing import Callable, List, Optional, Union
 
 import torch
-from torchtext.data import Dataset, Example, Iterator, Field
+from torchtext.data import Dataset, Example, Field, Iterator
 
 from . import models
 from .config import InferConfig
 from .data_loader import Fields, Vocab
 from .utils import get_logger
-
-from typing import Optional, Callable, List, Union
 
 
 class InferManager:

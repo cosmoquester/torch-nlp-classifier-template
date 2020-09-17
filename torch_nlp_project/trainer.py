@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Iterable, Union
 
 import torch
 import torch.nn as nn
@@ -10,7 +11,6 @@ from . import models
 from .config import TrainConfig
 from .data_loader import DataLoader
 from .utils import get_logger
-from typing import Union, Iterable
 
 
 class TrainManager:

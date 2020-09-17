@@ -1,0 +1,26 @@
+# Configs for model
+model_type: SampleModel
+model_configs: 
+  vocab_size: 10000
+  embedding_dim: 128
+  hidden_dim: 256
+  num_layers: 2
+  num_classes: 2
+
+# Configs for data
+data_loader_path: sample_dataloader.dill
+
+# Configs for training
+epoch: 1
+batch_size: 4
+val_batch_size: 32
+learning_rate: 1.e-4
+optimizer: Adam
+steps_per_log: 10
+steps_per_eval: 100
+
+model_save_dir: ./saved_model/
+model_save_prefix: samplemodel
+
+optimizer_args:
+  weight_decay: 0.01
