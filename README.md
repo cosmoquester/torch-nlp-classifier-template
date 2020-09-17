@@ -1,5 +1,7 @@
 # NLP Classifier Project Setup
 
+[![codecov](https://codecov.io/gh/psj8252/torch-nlp-classifier-template/branch/master/graph/badge.svg)](https://codecov.io/gh/psj8252/torch-nlp-classifier-template)
+
 - This repository is template for torch nlp classification task.
 
 ## Things to be changed
