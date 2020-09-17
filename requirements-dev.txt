@@ -1,2 +1,5 @@
 black
 isort
+pytest
+pytest-cov
+codecov
