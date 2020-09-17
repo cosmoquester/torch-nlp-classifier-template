@@ -5,7 +5,7 @@ import torch.nn as nn
 class BaseModel(nn.Module):
     save_params = {}
 
-    def save(self, path):
+    def save(self, path: str):
         """
         Save model to file.
         :param path: (str) Path to save model a file.
@@ -14,7 +14,7 @@ class BaseModel(nn.Module):
         torch.save({"save_params": self.save_params, "state_dict": self.state_dict()}, path)
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path: str):
         """
         Load model from file.
         :param path: (str) Path to load model from the file.
@@ -27,7 +27,7 @@ class BaseModel(nn.Module):
 
 
 class SampleModel(BaseModel):
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers, num_classes):
+    def __init__(self, vocab_size: int, embedding_dim: int, hidden_dim: int, num_layers: int, num_classes: int):
         super(SampleModel, self).__init__()
 
         self.embed = nn.Embedding(vocab_size, embedding_dim)
@@ -43,7 +43,7 @@ class SampleModel(BaseModel):
             "num_classes": num_classes,
         }
 
-    def forward(self, input_tokens):
+    def forward(self, input_tokens: torch.Tensor) -> torch.Tensor:
         embedded = self.embed(input_tokens)
         outputs, _ = self.lstm(embedded)
         outputs = self.tag(outputs[0])

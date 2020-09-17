@@ -1,16 +1,23 @@
 from datetime import datetime
 
 import torch
-from torchtext.data import Dataset, Example, Iterator
+from torchtext.data import Dataset, Example, Iterator, Field
 
 from . import models
 from .config import InferConfig
 from .data_loader import Fields, Vocab
 from .utils import get_logger
 
+from typing import Optional, Callable, List, Union
+
 
 class InferManager:
-    def __init__(self, inference_config_path, tokenize=None, device="cpu"):
+    def __init__(
+        self,
+        inference_config_path: str,
+        tokenize: Optional[Callable[[str], List[str]]] = None,
+        device: Union[str, torch.device] = "cpu",
+    ):
         """
         :param inference_config_path: (str) inference config file path.
         :param tokenize: (func) tokenizing function. (str) -> (list) of (str) tokens.
@@ -41,7 +48,7 @@ class InferManager:
         self.fields = Fields(vocab_path=self.config.vocab_path, tokenize=tokenize)
         self.logger.info(f"Set fields tokenize with '{self.fields.text_field.tokenize}'")
 
-    def inference_texts(self, texts):
+    def inference_texts(self, texts: List[str]) -> List[int]:
         """
         :param texts: (list) list of texts to inferece.
         :return: (list) of (int) labels about each text.
@@ -62,7 +69,7 @@ class InferManager:
 
         return labels
 
-    def _list_to_dataset(self, texts, text_field):
+    def _list_to_dataset(self, texts: List[str], text_field: Field):
         """
         Make dataset from list of texts.
         :param texts: (list) list of texts to inferece.

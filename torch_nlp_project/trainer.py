@@ -10,10 +10,11 @@ from . import models
 from .config import TrainConfig
 from .data_loader import DataLoader
 from .utils import get_logger
+from typing import Union, Iterable
 
 
 class TrainManager:
-    def __init__(self, training_config_path, device):
+    def __init__(self, training_config_path: str, device: Union[str, torch.device]):
         """
         :param training_config_path: (str) training config file path.
         :param device: (str, torch.device) device for training.
@@ -156,7 +157,7 @@ class TrainManager:
 
         return loss_sum / len(self.test_dataset), accuracy, precision, recall, f1
 
-    def get_metrics(self, true_labels, pred_labels):
+    def get_metrics(self, true_labels: Iterable[int], pred_labels: Iterable[int]):
         """
         :param true_labels: (iterable) correct label.
         :param pred_labels: (iterable) predicted label by model.
