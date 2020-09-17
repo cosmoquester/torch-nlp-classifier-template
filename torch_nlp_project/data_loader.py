@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple
 
 import dill
 from torchtext import vocab
@@ -104,8 +106,8 @@ class DataLoader:
     """
 
     def __init__(self):
-        self.train_dataset: Optional[TarbularDataset] = None
-        self.test_dataset: Optional[TarbularDataset] = None
+        self.train_dataset: Optional[TabularDataset] = None
+        self.test_dataset: Optional[TabularDataset] = None
 
     def make_dataset(
         self,
@@ -114,10 +116,10 @@ class DataLoader:
         test_data_path: Optional[str] = None,
         format: str = "tsv",
         skip_header: bool = True,
-    ) -> Tuple[TarbularDataset, TarbularDataset]:
+    ) -> Tuple[TabularDataset, TabularDataset]:
         """
         Make datasets from train_data_path, test_data_path.
-        :param fields: (list, Fields) This is used for TabularDataset fields. If the type of fields is list, it's format should be TarbularDataset fields.
+        :param fields: (list, Fields) This is used for TabularDataset fields. If the type of fields is list, it's format should be TabularDataset fields.
                         [defulat file form] type tsv, contains header row, column format ('id', 'text', 'label')
         :param train_data_path: (str) training data file path.
         :param test_data_path: (str) testing data file path.
@@ -146,7 +148,7 @@ class DataLoader:
 
         return self.train_dataset, self.test_dataset
 
-    def build_vocab(self, dataset: TarbularDataset = None, specials: List[str] = None) -> Vocab:
+    def build_vocab(self, dataset: TabularDataset = None, specials: List[str] = None) -> Vocab:
         """
         Build Vocab from Train dataset.
         :param dataset: (Dataset) dataset used to build vocab. (default: self.train_dataset)
@@ -209,7 +211,7 @@ class DataLoader:
             dataloader.test_dataset = Dataset(examples=checkpoint["test_examples"], fields=checkpoint["test_fields"])
         return dataloader
 
-    def _get_serializable_fields(self, dataset: TarbularDataset):
+    def _get_serializable_fields(self, dataset: TabularDataset):
         from copy import copy
 
         fields = {k: copy(v) for k, v in dataset.fields.items()}
